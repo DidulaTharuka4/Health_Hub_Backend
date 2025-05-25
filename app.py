@@ -72,6 +72,9 @@ import os
 import numpy as np
 from PIL import Image
 import tensorflow as tf
+import logging 
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
 
