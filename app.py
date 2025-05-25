@@ -107,14 +107,12 @@ def predict():
         print(f"[INFO] Received image file: {file.filename}")
 
         # Process the image
-        img = Image.open(file.stream).convert('L') 
-        print("[INFO] Image converted to grayscale")
-         # Convert to grayscale
-        img = img.resize((48, 48))  # Resize to match model input
-        print("[INFO] Image resized to 48x48")
-
+        img = Image.open(file.stream).convert('RGB')  # ✅ Use RGB
+        print("[INFO] Image converted to RGB")
+        img = img.resize((224, 224))  # ✅ Match MobileNetV2 input
+        print("[INFO] Image resized to 224, 224")
         img_array = np.array(img).astype('float32') / 255.0
-        img_array = img_array.reshape(1, 48, 48, 1)
+        img_array = img_array.reshape(1, 224, 224, 3)  # ✅ 3 channels
         print(f"[INFO] Image array shape: {img_array.shape}")
 
         # Run prediction
@@ -122,6 +120,7 @@ def predict():
         print(f"[INFO] Raw prediction output: {prediction}")
         predicted_index = int(np.argmax(prediction))
         emotion = emotion_labels[predicted_index]
+        confidence = float(np.max(prediction))
 
         logging.info(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
 
