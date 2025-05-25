@@ -79,8 +79,8 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 app = Flask(__name__)
 
 # Load your pretrained model
-# model = tf.keras.models.load_model('Model/emotion_cnn_model_with_k_fold_validation.h5')
-model = tf.keras.models.load_model('Model/emotion_cnn_model.h5')
+model = tf.keras.models.load_model('Model/emotion_cnn_model_with_k_fold_validation.h5')
+# model = tf.keras.models.load_model('Model/emotion_cnn_model.h5')
 
 # Define emotion labels
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
