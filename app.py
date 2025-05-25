@@ -39,6 +39,11 @@ model = tf.keras.models.load_model('Model/emotion_cnn_model_with_k_fold_validati
 # Define labels
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
 
+@app.route('/')
+def index():
+    return "✅ Flask Emotion Prediction API is running."
+
+
 @app.route('/predict', methods=['POST'])
 def predict():
     file = request.files['image']
