@@ -124,7 +124,8 @@ def predict():
 
         return jsonify({
             'emotion': emotion,
-            'confidence': float(np.max(prediction))
+            'confidence': confidence
+            # 'confidence': float(np.max(prediction))
         })
 
     except Exception as e:
