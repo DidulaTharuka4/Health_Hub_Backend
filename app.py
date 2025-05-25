@@ -88,24 +88,38 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
+        print("[INFO] /predict endpoint hit")
+
         # Check if 'image' key exists in the request
         if 'image' not in request.files:
+            print("[ERROR] No image part in the request")
             return jsonify({'error': 'No image part in the request'}), 400
 
         file = request.files['image']
         if file.filename == '':
+            print("[ERROR] No file selected")
             return jsonify({'error': 'No selected file'}), 400
 
+        print(f"[INFO] Received image file: {file.filename}")
+
         # Process the image
-        img = Image.open(file.stream).convert('L')  # Convert to grayscale
+        img = Image.open(file.stream).convert('L') 
+        print("[INFO] Image converted to grayscale")
+         # Convert to grayscale
         img = img.resize((48, 48))  # Resize to match model input
+        print("[INFO] Image resized to 48x48")
+
         img_array = np.array(img).astype('float32') / 255.0
         img_array = img_array.reshape(1, 48, 48, 1)
+        print(f"[INFO] Image array shape: {img_array.shape}")
 
         # Run prediction
         prediction = model.predict(img_array)
+        print(f"[INFO] Raw prediction output: {prediction}")
         predicted_index = int(np.argmax(prediction))
         emotion = emotion_labels[predicted_index]
+
+        print(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
 
         return jsonify({
             'emotion': emotion,
@@ -114,8 +128,10 @@ def predict():
 
     except Exception as e:
         print(f"[ERROR] Prediction failed: {e}")
+        print(f"[ERROR] Prediction failed: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
+    print(f"[INFO] Starting server on port {port}...")
     app.run(host='0.0.0.0', port=port)
