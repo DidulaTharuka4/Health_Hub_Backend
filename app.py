@@ -89,16 +89,16 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        print("[INFO] /predict endpoint hit")
+        logging.info("[INFO] /predict endpoint hit")
 
         # Check if 'image' key exists in the request
         if 'image' not in request.files:
-            print("[ERROR] No image part in the request")
+            logging.info("[ERROR] No image part in the request")
             return jsonify({'error': 'No image part in the request'}), 400
 
         file = request.files['image']
         if file.filename == '':
-            print("[ERROR] No file selected")
+            logging.info("[ERROR] No file selected")
             return jsonify({'error': 'No selected file'}), 400
 
         print(f"[INFO] Received image file: {file.filename}")
@@ -120,7 +120,7 @@ def predict():
         predicted_index = int(np.argmax(prediction))
         emotion = emotion_labels[predicted_index]
 
-        print(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
+        logging.info(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
 
         return jsonify({
             'emotion': emotion,
@@ -129,7 +129,7 @@ def predict():
         })
 
     except Exception as e:
-        print(f"[ERROR] Prediction failed: {e}")
+        logging.info(f"[ERROR] Prediction failed: {e}")
         print(f"[ERROR] Prediction failed: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
