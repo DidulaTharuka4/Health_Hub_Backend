@@ -81,10 +81,7 @@ app = Flask(__name__)
 # Load your pretrained model
 model = tf.keras.models.load_model('Model/emotion_cnn_model_with_k_fold_validation.h5')
 modelText = tf.keras.models.load_model('Model/text_emotion.pkl')
-
-model.summary()
-modelText.summary()
-
+modelfinal = tf.keras.models.load_model('Model/mental_health_predictor_model.h5')
 
 # Define emotion labels
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral']
@@ -152,6 +149,53 @@ def predict_facial_emotion():
 def predict_text_emotion():
     try:
         logging.info("[INFO] /textmotion endpoint hit")
+
+        data = request.get_json()
+
+        if not data or 'text' not in data:
+            logging.info("[ERROR] No 'text' found in the request")
+            return jsonify({'error': 'No text provided in request'}), 400
+
+        input_text = data['text']
+        print(f"[INFO] Received text: {input_text}")
+
+        # Text preprocessing (you can adjust based on how your model expects input)
+        processed_text = preprocess_text(input_text)  # Define this based on your model
+
+        # Predict
+        prediction = model.predict(processed_text)
+        print(f"[INFO] Raw prediction output: {prediction}")
+
+        predicted_index = int(np.argmax(prediction))
+        emotion = emotion_labels[predicted_index]
+        confidence = float(np.max(prediction))
+
+        # Store with timestamp
+        now = datetime.now()
+        emotion_store[now] = {'emotion': emotion, 'confidence': confidence}
+
+        # Clean up entries older than 24 hours
+        cutoff = now - timedelta(hours=24)
+        to_delete = [k for k in emotion_store if k < cutoff]
+        for key in to_delete:
+            del emotion_store[key]
+
+        logging.info(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
+
+        return jsonify({
+            'emotion': emotion,
+            'confidence': confidence
+        })
+
+    except Exception as e:
+        logging.info(f"[ERROR] Prediction failed: {e}")
+        print(f"[ERROR] Prediction failed: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+@app.route('/fina', methods=['POST'])
+def predict_text_emotion():
+    try:
+        logging.info("[INFO] /final emotion endpoint hit")
 
         data = request.get_json()
 
