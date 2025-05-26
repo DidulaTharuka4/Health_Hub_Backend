@@ -126,6 +126,16 @@ def predict_facial_emotion():
         emotion = emotion_labels[predicted_index]
         confidence = float(np.max(prediction))
 
+        # Store with timestamp
+        now = datetime.now()
+        emotion_store[now] = {'emotion': emotion, 'confidence': confidence}
+
+        # Clean up entries older than 24 hours
+        cutoff = now - timedelta(hours=24)
+        to_delete = [k for k in emotion_store if k < cutoff]
+        for key in to_delete:
+            del emotion_store[key]
+
         logging.info(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
 
         return jsonify({
@@ -162,6 +172,16 @@ def predict_text_emotion():
         predicted_index = int(np.argmax(prediction))
         emotion = emotion_labels[predicted_index]
         confidence = float(np.max(prediction))
+
+        # Store with timestamp
+        now = datetime.now()
+        emotion_store[now] = {'emotion': emotion, 'confidence': confidence}
+
+        # Clean up entries older than 24 hours
+        cutoff = now - timedelta(hours=24)
+        to_delete = [k for k in emotion_store if k < cutoff]
+        for key in to_delete:
+            del emotion_store[key]
 
         logging.info(f"[RESULT] Predicted Emotion: {emotion} with Confidence: {confidence:.4f}")
 
